@@ -1,0 +1,1 @@
+# django-intermediario-rev2
