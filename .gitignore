@@ -27,3 +27,5 @@ tmp/**
 .python-version
 .vs/
 db.sqlite3
+temp-dev.txt
+.env

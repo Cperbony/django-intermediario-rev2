@@ -2,6 +2,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpRequest
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.decorators import login_required
+
+from django_intermediario_rev2.my_app.forms import AddressForm
 from .models import Address, STATES_CHOICES
 
 
@@ -31,7 +33,7 @@ def login(request: HttpRequest):
 @login_required(login_url='/login')
 def logout(request):
     django_logout(request)
-    return redirect('/logout/')
+    return redirect('/login/')
 
 
 @login_required(login_url='/login')
@@ -48,8 +50,9 @@ def address_list(request):
 @login_required(login_url='/login')
 def address_create(request):
     if request.method == 'GET':
-        states = STATES_CHOICES
-        return render(request, 'my_app/address/create.html', {'states': states})
+        # states = STATES_CHOICES - Não mais necessário, pois passado no forms.py
+        form = AddressForm()
+        return render(request, 'my_app/address/create.html', {'form': form})
 
     Address.objects.create(
         address=request.POST.get('address'),
@@ -65,6 +68,26 @@ def address_create(request):
 
 @login_required(login_url='/login')
 def address_update(request, id):
+    address = Address.objects.get(id=id)
+    if request.method == 'GET':
+        states = STATES_CHOICES
+        return render(request, 'my_app/address/create.html', {'states': states, 'address': address})
+
+    address.address = request.POST.get('address')
+    address.address_complement = request.POST.get('address')
+    address.city = request.POST.get('address_complement')
+    address.state = request.POST.get('state')
+    address.country = request.POST.get('address_complement')
+    # NÃO ATUALIZA O USER
+    # address.user = request.user
+
+    address.save()
+
+    return redirect('/addresses/')
+
+
+@login_required(login_url='/login')
+def address_destroy(request, id):
     address = Address.objects.get(id=id)
     if request.method == 'GET':
         states = STATES_CHOICES

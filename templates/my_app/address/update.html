@@ -7,46 +7,8 @@
     <div class="container">
         <h3>Novo Endereço</h3>
         <form action="/addresses/{{ address.id }}/update/" method="post">
-            {% csrf_token %}
-
-            <div class="form-group">
-                <label for="address">Endereço</label>
-                <input type="text" id="address" name="address" class="form-group"
-                value="{{ address.address }}">
-            </div>
-
-              <div class="form-group">
-                <label for="address_complement">Complemento</label>
-                <input type="text" id="address_complement" name="address_complement" class="form-group"
-                value="{{ address.address_complement_normalized }}">
-            </div>
-
-              <div class="form-group">
-                <label for="city">Cidade</label>
-                <input type="text" id="city" name="city" class="form-group"
-                value="{{ address.city }}">
-            </div>
-
-              <div class="form-group">
-                <label for="state">Estado</label>
-                  <select name="state" id="state" class="form-control">
-                      {% for state in states %}
-                      <option
-                              value="{{ state.0 }}"
-                              {% if state.0 == address.state %}selected="selected"{% endif%}>
-                          {{ state.1 }}
-                      </option>
-                      {% endfor%}
-                  </select>
-            </div>
-
-              <div class="form-group">
-                <label for="country">Pais</label>
-                <input type="text" id="country" name="country" class="form-group"
-                value="{{ address.country }}">
-            </div>
-
-            <button type="submit" class="btn btn-primary">Criar</button>
+            {% include '/my_app/address/form.html' %}
+            <button type="submit" class="btn btn-primary">Update</button>
         </form>
 
     </div>
