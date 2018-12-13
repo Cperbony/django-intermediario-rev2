@@ -5,9 +5,10 @@
 
     {% block content %}
     <div class="container">
-        <h3>Novo Endereço</h3>
-        <form action="/addresses/{{ address.id }}/update/" method="post">
-            {% include '/my_app/address/form.html' %}
+        <h3>Editar Endereço</h3>
+        <form action="/addresses/{{ address.id }}/update/" method="post"
+              {% if form_submitted %}class="was-validated" {% endif %}>
+            {% include '/my_app/address/form_django.html' %}
             <button type="submit" class="btn btn-primary">Update</button>
         </form>
 

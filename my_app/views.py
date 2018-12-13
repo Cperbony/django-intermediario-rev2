@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login as django_login, logout as django_logout
 from django.contrib.auth.decorators import login_required
 
-from django_intermediario_rev2.my_app.forms import AddressForm
+from .forms import AddressForm
 from .models import Address, STATES_CHOICES
 
 
@@ -49,41 +49,59 @@ def address_list(request):
 
 @login_required(login_url='/login')
 def address_create(request):
+    form_submitted = False
     if request.method == 'GET':
         # states = STATES_CHOICES - Não mais necessário, pois passado no forms.py
         form = AddressForm()
-        return render(request, 'my_app/address/create.html', {'form': form})
+    else:
+        form_submitted = True
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            Address.objects.create(
+                address=form.cleaned_data['address'],
+                address_complement=form.cleaned_data['address_complement'],
+                city=form.cleaned_data['address_complement'],
+                state=form.cleaned_data['state'],
+                country=form.cleaned_data['address_complement'],
+                user=request.user
+            )
+            return redirect('/addresses/')
 
-    Address.objects.create(
-        address=request.POST.get('address'),
-        address_complement=request.POST.get('address'),
-        city=request.POST.get('address_complement'),
-        state=request.POST.get('state'),
-        country=request.POST.get('address_complement'),
-        user=request.user
-    )
+    return render(request, 'my_app/address/create.html', {'form': form, 'form_submitted': form_submitted})
 
-    return redirect('/addresses/')
+    # Address.objects.create(
+    #         address=request.POST.get('address'),
+    #         address_complement=request.POST.get('address'),
+    #         city=request.POST.get('address_complement'),
+    #         state=request.POST.get('state'),
+    #         country=request.POST.get('address_complement'),
+    #         user=request.user
 
 
 @login_required(login_url='/login')
 def address_update(request, id):
+    form_submitted = False
     address = Address.objects.get(id=id)
     if request.method == 'GET':
-        states = STATES_CHOICES
-        return render(request, 'my_app/address/create.html', {'states': states, 'address': address})
+        # states = STATES_CHOICES
+        form = AddressForm(address.__dict__)
+    else:
+        form_submitted = True
+        form = AddressForm(request.POST)
+        if form.is_valid():
+            address.address = request.POST.get('address')
+            address.address_complement = request.POST.get('address')
+            address.city = request.POST.get('address_complement')
+            address.state = request.POST.get('state')
+            address.country = request.POST.get('address_complement')
+        # NÃO ATUALIZA O USER
+        # address.user = request.user
+        address.save()
 
-    address.address = request.POST.get('address')
-    address.address_complement = request.POST.get('address')
-    address.city = request.POST.get('address_complement')
-    address.state = request.POST.get('state')
-    address.country = request.POST.get('address_complement')
-    # NÃO ATUALIZA O USER
-    # address.user = request.user
+        return redirect('/addresses/')
 
-    address.save()
-
-    return redirect('/addresses/')
+    return render(request, 'my_app/address/update.html',
+                  {'address': address, 'form': form, 'form_submitted': form_submitted})
 
 
 @login_required(login_url='/login')
