@@ -57,14 +57,17 @@ def address_create(request):
         form_submitted = True
         form = AddressForm(request.POST)
         if form.is_valid():
-            Address.objects.create(
-                address=form.cleaned_data['address'],
-                address_complement=form.cleaned_data['address_complement'],
-                city=form.cleaned_data['address_complement'],
-                state=form.cleaned_data['state'],
-                country=form.cleaned_data['address_complement'],
-                user=request.user
-            )
+            address = form.save(commit=False)
+            address.user = request.user
+            address.save()
+            # Address.objects.create(
+            #     address=form.cleaned_data['address'],
+            #     address_complement=form.cleaned_data['address_complement'],
+            #     city=form.cleaned_data['city'],
+            #     state=form.cleaned_data['state'],
+            #     country=form.cleaned_data['country'],
+            #     user=request.user
+            # )
             return redirect('/addresses/')
 
     return render(request, 'my_app/address/create.html', {'form': form, 'form_submitted': form_submitted})
@@ -84,16 +87,18 @@ def address_update(request, id):
     address = Address.objects.get(id=id)
     if request.method == 'GET':
         # states = STATES_CHOICES
-        form = AddressForm(address.__dict__)
+        # form = AddressForm(address.__dict__)
+        form = AddressForm(instance=address)
     else:
         form_submitted = True
-        form = AddressForm(request.POST)
+        form = AddressForm(request.POST, instance=address)
         if form.is_valid():
-            address.address = request.POST.get('address')
-            address.address_complement = request.POST.get('address')
-            address.city = request.POST.get('address_complement')
-            address.state = request.POST.get('state')
-            address.country = request.POST.get('address_complement')
+            form.save()
+            # address.address = request.POST.get('address')
+            # address.address_complement = request.POST.get('address')
+            # address.city = request.POST.get('city')
+            # address.state = request.POST.get('state')
+            # address.country = request.POST.get('country')
         # NÃO ATUALIZA O USER
         # address.user = request.user
         address.save()
@@ -113,9 +118,9 @@ def address_destroy(request, id):
 
     address.address = request.POST.get('address')
     address.address_complement = request.POST.get('address')
-    address.city = request.POST.get('address_complement')
+    address.city = request.POST.get('city')
     address.state = request.POST.get('state')
-    address.country = request.POST.get('address_complement')
+    address.country = request.POST.get('country')
     # NÃO ATUALIZA O USER
     # address.user = request.user
 
