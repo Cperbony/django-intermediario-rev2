@@ -29,7 +29,7 @@ pbr==5.1.1
 pexpect==4.2.1
 Pillow==5.1.0
 powerline-status==2.6
-protobuf==3.0.0
+protobuf==3.18.3
 psutil==5.4.2
 ptyprocess==0.6.0
 pycparser==2.19
